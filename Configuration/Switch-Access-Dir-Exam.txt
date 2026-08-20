@@ -1,0 +1,64 @@
+hostname Dir-Exam
+
+vlan 20
+ name Direction
+vlan 21
+ name Examen_Concours
+vlan 40
+ name Impression
+vlan 50
+ name Telephonie
+vlan 100
+ name Administration
+
+service password-encryption
+enable secret 1234
+
+ip domain-name metropole.com
+ip ssh version 2
+crypto key generate rsa module 1024
+
+username admin secret 1234
+
+! Interface de gestion
+interface Vlan100
+ ip address 192.168.100.2 255.255.255.0
+ no shutdown
+
+ip default-gateway 192.168.100.254
+
+! Ports d'accès Direction
+interface FastEthernet0/1
+ switchport mode access
+ switchport access vlan 20
+ switchport voice vlan 50
+ mls qos trust cos
+ no shutdown
+
+interface FastEthernet0/2
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
+
+! Ports d'accès Examen/Concours
+interface FastEthernet0/4
+ switchport mode access
+ switchport access vlan 21
+ no shutdown
+
+! Port d'accès Impression
+interface FastEthernet0/3
+ switchport mode access
+ switchport access vlan 40
+ no shutdown
+
+! Uplink Trunk vers SwitchL3
+interface GigabitEthernet0/1
+ switchport mode trunk
+ switchport trunk native vlan 100
+ switchport trunk allowed vlan 20,21,40,50,100
+ no shutdown
+
+line vty 0 15
+ login local
+ transport input ssh

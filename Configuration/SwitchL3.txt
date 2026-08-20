@@ -1,0 +1,145 @@
+hostname SwitchL3
+
+vlan 20
+ name Direction
+vlan 21
+ name Examen_Concours
+vlan 22
+ name Paie_DRH
+vlan 23
+ name Emploi
+vlan 24
+ name Medecine
+vlan 25
+ name Assurance
+vlan 27
+ name Info_RGPD
+vlan 30
+ name Serveurs
+vlan 40
+ name Impression
+vlan 50
+ name Telephonie
+vlan 60
+ name Wi-Fi
+vlan 100
+ name Administration
+
+! Activation du routage IPv4 et IPv6
+ip routing
+ipv6 unicast-routing
+
+service password-encryption
+enable secret 1234
+
+ip domain-name metropole.com
+ip ssh version 2
+crypto key generate rsa module 1024
+
+username admin secret 1234
+
+! Interfaces SVI (Passerelles Dual-Stack IPv4/IPv6)
+interface Vlan20
+ description Gateway Direction
+ ip address 192.168.20.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:20::254/64
+ no shutdown
+
+interface Vlan21
+ description Gateway Examen_Concours
+ ip address 192.168.21.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:21::254/64
+ no shutdown
+
+interface Vlan22
+ description Gateway Paie_DRH
+ ip address 192.168.22.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:22::254/64
+ no shutdown
+
+interface Vlan23
+ description Gateway Emploi
+ ip address 192.168.23.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:23::254/64
+ no shutdown
+
+interface Vlan24
+ description Gateway Medecine
+ ip address 192.168.24.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:24::254/64
+ no shutdown
+
+interface Vlan25
+ description Gateway Assurance
+ ip address 192.168.25.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:25::254/64
+ no shutdown
+
+interface Vlan27
+ description Gateway Info_RGPD
+ ip address 192.168.27.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:27::254/64
+ no shutdown
+
+interface Vlan30
+ description Gateway Serveurs
+ ip address 192.168.30.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:30::254/64
+ no shutdown
+
+interface Vlan40
+ description Gateway Impression
+ ip address 192.168.40.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:40::254/64
+ no shutdown
+
+interface Vlan50
+ description Gateway Telephonie
+ ip address 192.168.50.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:50::254/64
+ no shutdown
+
+interface Vlan60
+ description Gateway Wi-Fi
+ ip address 192.168.60.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:60::254/64
+ no shutdown
+
+interface Vlan100
+ description Gateway Administration
+ ip address 192.168.100.254 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:100::254/64
+ no shutdown
+
+! Interconnexion L3 vers RouterCG
+interface GigabitEthernet1/0/1
+ no switchport
+ ip address 192.168.10.2 255.255.255.0
+ ipv6 address 2001:DB8:ACAD:10::2/64
+ no shutdown
+
+! Trunks vers Switchs d'accès
+interface GigabitEthernet1/0/2
+ switchport mode trunk
+ switchport trunk native vlan 100
+ switchport trunk allowed vlan 20,21,40,50,100
+ no shutdown
+
+! Accès Serveurs & AP Wi-Fi
+interface GigabitEthernet1/0/6
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+
+interface GigabitEthernet1/0/9
+ switchport mode access
+ switchport access vlan 60
+ no shutdown
+
+! Routes par défaut (IPv4 & IPv6) vers RouterCG
+ip route 0.0.0.0 0.0.0.0 192.168.10.1
+ipv6 route ::/0 2001:DB8:ACAD:10::1
+
+line vty 0 15
+ login local
+ transport input ssh
