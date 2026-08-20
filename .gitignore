@@ -1,0 +1,13 @@
+# Fichiers temporaires Cisco Packet Tracer
+*.tmp
+*.bak
+*.autosave
+
+# Fichiers systèmes
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dossiers d'IDE ou éditeurs
+.vscode/
+.idea/
